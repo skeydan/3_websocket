@@ -1,0 +1,15 @@
+{
+  "name": "2_mocking_services",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "static": "serve -p 5050 static",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sigrid Keydana",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "serve": "^14.2.3"
+  }
+}
