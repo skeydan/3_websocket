@@ -25,6 +25,24 @@ const catToPrefix = {
    }
  } 
 
+ // Add order to stream and update total
+function addOrder(id, amount) {
+  if (orders.hasOwnProperty(id) === false) {
+    const err = new Error(`Order ${id} not found`);
+    err.status = 404;
+    throw err;
+  }
+  if (Number.isInteger(amount) === false) {
+    const err = new Error('Supplied amount must be an integer');
+    err.status = 400;
+    throw err;
+  }
+  orders[id].total += amount;
+  const { total } = orders[id]
+  console.log("Adding order: %o", { id, total });
+  orderStream.write({ id, total });
+} 
+
 // Return current orders
 function* currentOrders(category) {
   console.log("in currentOrders");
@@ -47,6 +65,9 @@ const calculateID = (idPrefix, data) => {
 export default fp(async function (fastify, opts) {
   fastify.decorate("currentOrders", currentOrders);
   fastify.decorate("realtimeOrders", realtimeOrdersSimulator);
+  // to test:
+  // node -e "http.request('http://localhost:3000/orders/A1', { method:'POST', headers: {'content-type': 'application/json'}}, (res) => res.pipe(process.stdout)).end(JSON.stringify({amount: 10}))""
+  fastify.decorate("addOrder", addOrder);
   fastify.decorate("mockDataInsert", function (request, category, data) {
     const idPrefix = catToPrefix[category];
     const id = calculateID(idPrefix, data);
